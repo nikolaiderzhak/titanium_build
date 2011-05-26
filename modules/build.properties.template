@@ -1,0 +1,8 @@
+titanium.sdk=/home/hudson/.titanium
+titanium.os=linux
+titanium.version=TITANIUM_VERSION
+android.sdk=/usr/local/android-sdk
+
+titanium.platform=${titanium.sdk}/mobilesdk/${titanium.os}/${titanium.version}/android
+android.platform=${android.sdk}/platforms/android-4
+google.apis=${android.sdk}/add-ons/google_apis-4
