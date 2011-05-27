@@ -24,7 +24,7 @@ for key in bucket.list(prefix=prefix):
 
 cleaned = 0
 deleted_keys = []
-if (len(keys) > 15):
+if (len(keys) > 90):
 	# only keep the last 5 builds * 3 platforms = 15 files
 	keys.sort(lambda a,b: cmp(a.last_modified, b.last_modified))
 	for i in range(0, len(keys)-15):
