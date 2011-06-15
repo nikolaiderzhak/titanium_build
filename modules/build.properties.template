@@ -1,7 +1,7 @@
-titanium.sdk=/home/hudson/.titanium
-titanium.os=linux
+titanium.sdk=/Library/Application\ Support/Titanium/
+titanium.os=osx
 titanium.version=TITANIUM_VERSION
-android.sdk=/usr/local/android-sdk
+android.sdk=/Users/vasyl/android-sdk-mac_x86
 
 titanium.platform=${titanium.sdk}/mobilesdk/${titanium.os}/${titanium.version}/android
 android.platform=${android.sdk}/platforms/android-4
