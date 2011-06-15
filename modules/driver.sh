@@ -54,7 +54,7 @@ for MODULE in `ls $WORKSPACE/android`; do
 	#MOD_TIME_PREV=`ls -l --time-style=+'%Y%m%d%H%M%S' dist/*\.zip | awk '{print $6}'`
 	#ZIP=`ls dist/*\.zip`
 	#if [ "$ZIP" ]; then rm $ZIP; fi
-	ant >& ant.log
+	ant -v clean dist >& ant.log
 	grep 'BUILD SUCCESSFUL' ant.log || cat ant.log
 	#MOD_TIME_POST=`ls -l --time-style=+'%Y%m%d%H%M%S' dist/*\.zip | awk '{print $6}'`
 	# check if zip was updated
