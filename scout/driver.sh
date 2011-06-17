@@ -40,7 +40,7 @@ echo "building Scout (Android)..."
 
 BUILD_DIR=build/android/bin
 
-STAMPED_APK=scout-$TIMESTAMP-sdk-$MSDK_VERSION.apk
+STAMPED_APK=scout-$TIMESTAMP-sdk-$MSDK_VERSION-android.apk
 
 mv $BUILD_DIR/app.apk $STAMPED_APK
 
