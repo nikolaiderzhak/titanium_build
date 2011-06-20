@@ -34,6 +34,8 @@ APP_NAME=`grep '<name>' tiapp.xml | awk -F"<|>" '{print $3}'`
 
 echo "building Scout (Android)..."
 
+git show --format=%H| head -n1 > Resources/revision
+
 /Users/nikolai/Titanium/mobilesdk/$PLATFORM/$MSDK_VERSION/android/builder.py build $APP_NAME $ANDROID_SDK . $APP_ID > build.log 2>&1
 
 (grep app.apk build.log | grep -q jarsigner) || ( cat build.log && exit )
