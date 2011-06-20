@@ -2,6 +2,8 @@
 
 # A hudson build driver for Titanium Desktop
 
+export PATH=/usr/local/git/bin:$HOME/bin:$PATH
+
 cd $WORKSPACE
 GIT_BRANCH=$1
 shift
@@ -29,9 +31,9 @@ cd kroll && git checkout $GIT_BRANCH && git pull && cd ../
 scons -j $NUM_CPUS debug=1 breakpad=0 drillbit dist $@ || exit
 
 # TODO: re-enable drillbit tests
-./build/$PLATFORM/$DRILLBIT_APP/$DRILLBIT_EXE --autorun --autoclose
-mkdir -p drillbit_results
-$TITANIUM_BUILD/desktop/drillbit_collector.py > drillbit_results/index.html
+#./build/$PLATFORM/$DRILLBIT_APP/$DRILLBIT_EXE --autorun --autoclose
+#mkdir -p drillbit_results
+#$TITANIUM_BUILD/desktop/drillbit_collector.py > drillbit_results/index.html
 
 TIMESTAMP_NAME=build/$PLATFORM/dist/sdk-$VERSION-$TIMESTAMP-$PLATFORM.zip
 mv build/$PLATFORM/dist/sdk-$VERSION.zip $TIMESTAMP_NAME
