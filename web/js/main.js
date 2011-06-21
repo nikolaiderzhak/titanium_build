@@ -41,7 +41,8 @@ $(document).ready(function() {
 	}
 	
 	function getPlatform(file) {
-		var last = file.filename.split("-")[3];
+		var tokens = file.filename.split("-");
+		var last = tokens[tokens.length - 1];
 		return last.substring(0, last.length-4);
 	}
 	
@@ -106,9 +107,9 @@ $(document).ready(function() {
 		for (var i = 0; i < data.length; i++) {
 			var file = data[i];
 			var tokens = file.filename.split("-");
-			var timestamp;
-			if (tokens[1].indexOf("v") == 0) {
-				timestamp = tokens[1].substring(1);
+			var timestamp, vTimestamp;
+			if ((vTimestamp = tokens[1].indexOf("v")) != -1) {
+				timestamp = tokens[1].substring(vTimestamp + 1);
 			} else {
 				timestamp = tokens[2];
 			}
