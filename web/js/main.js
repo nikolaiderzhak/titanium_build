@@ -105,7 +105,13 @@ $(document).ready(function() {
 		var revisionIndexes = [];
 		for (var i = 0; i < data.length; i++) {
 			var file = data[i];
-			var timestamp = file.filename.split("-")[2];
+			var tokens = file.filename.split("-");
+			var timestamp;
+			if (tokens[1].indexOf("v") == 0) {
+				timestamp = tokens[1].substring(1);
+			} else {
+				timestamp = tokens[2];
+			}
 			var date = new Date();
 			date.setFullYear(timestamp.substring(0,4), timestamp.substring(4,6)-1, timestamp.substring(6,8));
 			date.setHours(timestamp.substring(8,10));
