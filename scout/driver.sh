@@ -2,14 +2,14 @@
 
 # A hudson build driver for Titanium Mobile Modules
 
-export PATH=/usr/local/git/bin:$PATH
+export PATH=/usr/local/git/bin:~/bin:$PATH
 
 #export TITANIUM_BUILD=/Users/nikolai/build/titanium_build
 #export WORKSPACE=/Users/nikolai/build/titanium_mobile_modules
 
 export ANDROID_SDK=/Users/vasyl/android-sdk-mac_x86
 export MOBILE_SDK="/Library/Application Support/Titanium/mobilesdk"
-export MSDK_VERSION=1.7.0
+export MSDK_BRANCHES="master 1_7_X 1_6_X"
 
 cd $WORKSPACE
 
@@ -24,6 +24,16 @@ TIMESTAMP=`date +'%Y%m%d%H%M%S'`
 if [ "$PYTHON" = "" ]; then
 	PYTHON=python
 fi
+
+for MSDK_BRANCH in $MSDK_BRANCHES; do
+
+SDK_BUCKET=`s3cmd ls s3://builds.appcelerator.com/mobile/$MSDK_BRANCH/| grep $PLATFORM| tail -n1| awk '{print $4}'`
+s3cmd get $SDK_BUCKET
+SDK=`echo $SDK_BUCKET| cut -d/ -f6`
+tar xzf $SDK -C ~/Titanium/
+
+MSDK_VERSION=`tar tzf $SDK | head -n 1 | cut -d/ -f 3`
+rm $SDK
 
 # Android 
 
@@ -51,3 +61,5 @@ rm $STAMPED_APK
 echo
 
 $PYTHON $TITANIUM_BUILD/common/s3_cleaner.py scout $GIT_BRANCH
+
+done
