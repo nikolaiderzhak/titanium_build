@@ -4,13 +4,8 @@
 
 export PATH=/usr/local/git/bin:$PATH
 
-#export PKG_CONFIG_PATH=/home/hudson/linux_slave/lib/pkgconfig:$PKG_CONFIG_PATH
-#export LD_LIBRARY_PATH=/home/hudson/linux_slave/lib
-
-#export TITANIUM_BUILD=/home/hudson/Source/titanium_build
 #export TITANIUM_BUILD=/Users/nikolai/build/titanium_build
-#export WORKSPACE=/home/hudson/linux_slave/stage/titanium_mobile_modules
-#export WORKSPACE=/Users/nikolai/build/titanium_mobile_modules
+#export WORKSPACE=/Users/nikolai/build/workspace/titanium_mobile_modules
 
 cd $WORKSPACE
 
@@ -46,21 +41,53 @@ done
 
 # Android modules
 
+export ANDROID_SDK=/Users/vasyl/android-sdk-mac_x86
+
 for MODULE in `ls $WORKSPACE/android`; do
+#	for debugging of particular module
+#	if [ "$MODULE" != "urbanAirship" ]; then continue; fi
+
 	MIN_SDK=`grep minsdk $WORKSPACE/android/$MODULE/manifest | cut -f2 -d' '`
-	sed s/TITANIUM_VERSION/$MIN_SDK/ $TITANIUM_BUILD/modules/build.properties.template > $WORKSPACE/android/$MODULE/build.properties
+	MODULE_DIR=$WORKSPACE/android/$MODULE
+
+	for BRANCH in `s3cmd ls s3://builds.appcelerator.com/mobile/| grep DIR| awk '{print $2}'`; do
+		SDK_BUCKET=`s3cmd ls $BRANCH | grep "\-$MSDK_VERSION" | grep $PLATFORM | tail -n1 | awk '{print $4}'`;
+	done
+	if echo $SDK_BUCKET| grep -q master; then
+		SDK=`echo $SDK_BUCKET| cut -d/ -f6`
+		MSDK_VERSION_STAMP=`echo $SDK_BUCKET| cut -d- -f2`
+
+		if [ ! -d  ~/Titanium/mobilesdk/osx/$MSDK_VERSION_STAMP ]; then
+			rm -rf ~/Titanium/mobilesdk/osx/$MSDK_VERSION*
+			s3cmd get --force $SDK_BUCKET && tar xzf $SDK -C ~/Titanium/
+			rm $SDK
+		fi	
+		MSDK_VERSION=$MSDK_VERSION_STAMP
+		TITANIUM_SDK="$HOME/Titanium/"
+	else
+		MSDK_VERSION=$MIN_SDK
+		TITANIUM_SDK="/Library/Application Support/Titanium/"
+	fi
+	sed s/TITANIUM_VERSION/$MSDK_VERSION/ $TITANIUM_BUILD/modules/build.properties.template > $MODULE_DIR/build.properties
+
+	TMP=`echo $TITANIUM_SDK|sed "s/\//\\\\\\\\\//g"`
+	ESCAPED_TITANIUM_SDK=`echo $TMP|sed "s/\ /\\\\\\\\\\\\\\\\\ /g"`
+	sed -i -e "s/TITANIUM_SDK/$ESCAPED_TITANIUM_SDK/" $MODULE_DIR/build.properties
+
+	if [ -f $MODULE_DIR/build.properties.example ]; then
+		grep -s android.platform $MODULE_DIR/build.properties.example >> $MODULE_DIR/build.properties
+		grep -s google.apis $MODULE_DIR/build.properties.example >> $MODULE_DIR/build.properties
+	else
+		grep default $TITANIUM_BUILD/modules/build.properties.template| sed s/default\.// >> $MODULE_DIR/build.properties
+	fi
+
 	cd $WORKSPACE/android/$MODULE
+	mkdir lib
 	echo "building $MODULE (Android)..."
-	#MOD_TIME_PREV=`ls -l --time-style=+'%Y%m%d%H%M%S' dist/*\.zip | awk '{print $6}'`
-	#ZIP=`ls dist/*\.zip`
-	#if [ "$ZIP" ]; then rm $ZIP; fi
+
 	ant -v clean dist >& ant.log
 	grep 'BUILD SUCCESSFUL' ant.log || cat ant.log
-	#MOD_TIME_POST=`ls -l --time-style=+'%Y%m%d%H%M%S' dist/*\.zip | awk '{print $6}'`
-	# check if zip was updated
-	#echo $MOD_TIME_PREV
-	#echo $MOD_TIME_POST
-	#if [ "$MOD_TIME_PREV" = "$MOD_TIME_POST" ]; then continue; fi
+
 	ZIP=`ls dist/*\.zip`
 	if [ -z "$ZIP" ]; then continue; fi
 	STAMPED_ZIP=`echo $ZIP| sed "s/\/\(.*\).zip/\/\1-$TIMESTAMP.zip/"`
