@@ -39,6 +39,8 @@ rm $SDK
 
 cd $WORKSPACE/Scout
 
+rm -fr build
+
 APP_ID=`grep '<id>' tiapp.xml | awk -F"<|>" '{print $3}'`
 APP_NAME=`grep '<name>' tiapp.xml | awk -F"<|>" '{print $3}'`
 
@@ -46,7 +48,9 @@ echo "building Scout (Android)..."
 
 git show --format=%H| head -n1 > Resources/revision
 
-/Users/nikolai/Titanium/mobilesdk/$PLATFORM/$MSDK_VERSION/android/builder.py build $APP_NAME $ANDROID_SDK . $APP_ID > build.log 2>&1
+#/Library/Application Support/Titanium/mobilesdk/osx/1.7.2.v20110630161836/android/builder.py simulator Scout /Users/vasyl/android-sdk-mac_x86 /Users/vasyl/projects/integrity_mobile/Scout com.appcelerator.integrityscout 7 HVGA
+
+/Users/nikolai/Titanium/mobilesdk/$PLATFORM/$MSDK_VERSION/android/builder.py build $APP_NAME $ANDROID_SDK . $APP_ID 7 HVGA > build-$MSDK_VERSION.log 2>&1
 
 (grep app.apk build.log | grep -q jarsigner) || ( cat build.log && exit )
 
