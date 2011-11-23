@@ -4,8 +4,8 @@
 
 export PATH=/usr/local/git/bin:$PATH
 
-#export TITANIUM_BUILD=/Users/nikolai/build/titanium_build
-#export WORKSPACE=/Users/nikolai/build/workspace/titanium_mobile_modules
+export TITANIUM_BUILD=/Users/nikolai/build/titanium_build
+export WORKSPACE=/Users/nikolai/build/workspace/titanium_mobile_modules
 
 cd $WORKSPACE
 
@@ -47,11 +47,13 @@ for MODULE in `ls $WORKSPACE/android`; do
 #	for debugging of particular module
 #	if [ "$MODULE" != "urbanAirship" ]; then continue; fi
 
-	MIN_SDK=`grep minsdk $WORKSPACE/android/$MODULE/manifest | cut -f2 -d' '`
+	#MIN_SDK=`grep minsdk $WORKSPACE/android/$MODULE/manifest | cut -f3 -d' '`
+	MSDK_VERSION=`grep titanium.version= $WORKSPACE/android/$MODULE/build.properties.example|cut -d= -f2`
 	MODULE_DIR=$WORKSPACE/android/$MODULE
 
 	for BRANCH in `s3cmd ls s3://builds.appcelerator.com/mobile/| grep DIR| awk '{print $2}'`; do
 		SDK_BUCKET=`s3cmd ls $BRANCH | grep "\-$MSDK_VERSION" | grep $PLATFORM | tail -n1 | awk '{print $4}'`;
+		if [ -n "$SDK_BUCKET" ]; then break; fi
 	done
 	if echo $SDK_BUCKET| grep -q master; then
 		SDK=`echo $SDK_BUCKET| cut -d/ -f6`
@@ -65,7 +67,7 @@ for MODULE in `ls $WORKSPACE/android`; do
 		MSDK_VERSION=$MSDK_VERSION_STAMP
 		TITANIUM_SDK="$HOME/Titanium/"
 	else
-		MSDK_VERSION=$MIN_SDK
+		MSDK_VERSION=$MSDK_VERSION
 		TITANIUM_SDK="/Library/Application Support/Titanium/"
 	fi
 	sed s/TITANIUM_VERSION/$MSDK_VERSION/ $TITANIUM_BUILD/modules/build.properties.template > $MODULE_DIR/build.properties
