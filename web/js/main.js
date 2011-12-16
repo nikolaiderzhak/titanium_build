@@ -7,9 +7,18 @@ $(document).ready(function() {
 		},
 		desktop: {osx: "OSX", linux: "Linux", win32: "Windows"}
 	};
+
 	var mobileGitUrl = "http://github.com/appcelerator/titanium_mobile/commit/";
 	var desktopGitUrl = "http://github.com/appcelerator/titanium_desktop/commit/";
-	
+	var showMobileBranch, showDesktopBranch;
+	var params = $.deparam.querystring();
+	if ("mobile_branch" in params) {
+		showMobileBranch = params.mobile_branch;
+	}
+	if ("desktop_branch" in params) {
+		showDesktopBranch = params.desktop_branch;
+	}
+
 	function appendRevision(type, revision, files) {
 		var url = (type=="mobile" ? mobileGitUrl : desktopGitUrl) + revision;
 		
@@ -32,7 +41,8 @@ $(document).ready(function() {
 	}
 	
 	function getPlatform(file) {
-		var last = file.filename.split("-")[3];
+		var tokens = file.filename.split("-");
+		var last = tokens[tokens.length - 1];
 		return last.substring(0, last.length-4);
 	}
 	
@@ -59,14 +69,18 @@ $(document).ready(function() {
 		select.attr('disabled', null);
 		
 		var defaultBranch = 'master';
-		if ('defaultBranch' in branches) {
+		if (showDesktopBranch && type == "desktop") {
+			defaultBranch = showDesktopBranch;
+		} else if (showMobileBranch && type == "mobile") {
+			defaultBranch = showMobileBranch;
+		} else if ('defaultBranch' in branches) {
 			defaultBranch = branches.defaultBranch;
 		} else {
 			if ('branches' in branches && branches.branches.length > 0) {
 				defaultBranch = branches.branches[0]
 			}
 		}
-		
+
 		$.each(branches.branches, function(index, branch) {
 			var option = $('<option></option>').attr('value', branch).text(branch);
 			if (branch == defaultBranch) {
@@ -92,7 +106,13 @@ $(document).ready(function() {
 		var revisionIndexes = [];
 		for (var i = 0; i < data.length; i++) {
 			var file = data[i];
-			var timestamp = file.filename.split("-")[2];
+			var tokens = file.filename.split("-");
+			var timestamp, vTimestamp;
+			if ((vTimestamp = tokens[1].indexOf("v")) != -1) {
+				timestamp = tokens[1].substring(vTimestamp + 1);
+			} else {
+				timestamp = tokens[2];
+			}
 			var date = new Date();
 			date.setFullYear(timestamp.substring(0,4), timestamp.substring(4,6)-1, timestamp.substring(6,8));
 			date.setHours(timestamp.substring(8,10));
@@ -121,7 +141,7 @@ $(document).ready(function() {
 			appendRevision(type, revision, revisions[revision]);
 		});
 	}
-	
+
 	$('body').ajaxError(function(event, xhr, settings, exception) {
 		var type = settings.url.substring(0, settings.url.lastIndexOf('/'));
 		$('#'+type+'_table').html('<tr><td>No builds found</td></tr>');

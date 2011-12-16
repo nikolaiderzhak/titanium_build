@@ -3,17 +3,14 @@
 # A hudson build driver for Titanium Mobile 
 
 export PATH=/bin:/usr/bin:$PATH
-scons package_all=1 $TI_MOBILE_SCONS_ARGS
 
 GIT_BRANCH=$1
 GIT_REVISION=`git log --pretty=oneline -n 1 | sed 's/ .*//' | tr -d '\n' | tr -d '\r'`
 VERSION=`python $TITANIUM_BUILD/common/get_version.py | tr -d '\r'`
 TIMESTAMP=`date +'%Y%m%d%H%M%S'`
-BASENAME=dist/mobilesdk-$VERSION-$TIMESTAMP
+BASENAME=dist/mobilesdk-$VERSION.v$TIMESTAMP
 
-mv dist/mobilesdk-$VERSION-osx.zip $BASENAME-osx.zip
-mv dist/mobilesdk-$VERSION-win32.zip $BASENAME-win32.zip
-mv dist/mobilesdk-$VERSION-linux.zip $BASENAME-linux.zip
+scons package_all=1 version_tag=$VERSION.v$TIMESTAMP $TI_MOBILE_SCONS_ARGS
 
 if [ "$PYTHON" = "" ]; then
 	PYTHON=python
