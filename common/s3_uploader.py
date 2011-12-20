@@ -4,8 +4,8 @@ from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 import simplejson
 
-if len(sys.argv) != 6:
-	print "Usage: %s <desktop|mobile> <path> <branch> <revision> <build url>" % sys.argv[0]
+if len(sys.argv) < 6:
+	print "Usage: %s <desktop|mobile> <path> <branch> <revision> <build url> <private>" % sys.argv[0]
 	sys.exit(1)
 
 (type, path, branch, revision, build_url) = sys.argv[1:]
@@ -46,7 +46,8 @@ if not uploaded:
 	print >>sys.stderr, "Failed to upload %s after %d attempts" % (path, max_retries)
 	sys.exit(1)
 
-key.make_public()
+if type != "modules":
+	key.make_public()
 
 print 'updating %s/%s/index.json..' % (type, branch)
 index_key = bucket.get_key('%s/%s/index.json' % (type, branch))
@@ -59,4 +60,5 @@ else:
 
 index.append({ 'filename': filename, 'git_branch': branch, 'git_revision': revision, 'build_url': build_url, 'build_type': type, 'sha1': sha1, 'size': filesize })
 index_key.set_contents_from_string(simplejson.dumps(index))
-index_key.make_public()
+if type != "modules":
+	index_key.make_public()

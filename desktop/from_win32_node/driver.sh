@@ -1,8 +1,7 @@
 #!/bin/sh
 
 # A hudson build driver for Titanium Desktop
-
-export PATH=/usr/local/git/bin:$HOME/bin:$PATH
+export PATH=/bin:/usr/bin:$PATH
 
 cd $WORKSPACE
 GIT_BRANCH=$1
@@ -31,9 +30,9 @@ cd kroll && git checkout $GIT_BRANCH && git pull && cd ../
 scons -j $NUM_CPUS debug=1 breakpad=0 drillbit dist $@ || exit
 
 # TODO: re-enable drillbit tests
-#./build/$PLATFORM/$DRILLBIT_APP/$DRILLBIT_EXE --autorun --autoclose
-#mkdir -p drillbit_results
-#$TITANIUM_BUILD/desktop/drillbit_collector.py > drillbit_results/index.html
+./build/$PLATFORM/$DRILLBIT_APP/$DRILLBIT_EXE --autorun --autoclose
+mkdir -p drillbit_results
+$TITANIUM_BUILD/desktop/drillbit_collector.py > drillbit_results/index.html
 
 TIMESTAMP_NAME=build/$PLATFORM/dist/sdk-$VERSION-$TIMESTAMP-$PLATFORM.zip
 mv build/$PLATFORM/dist/sdk-$VERSION.zip $TIMESTAMP_NAME
@@ -44,10 +43,6 @@ if [ "$PLATFORM" = "win32" ]; then
 #	TIMESTAMP_NAME=`python -c "import os.path; print os.path.abspath('$TIMESTAMP_NAME')"`
 fi
 
-if [ "$PYTHON" = "" ]; then
-	PYTHON=python
-fi
-
 #SHA1=`shasum $TIMESTAMP_NAME | sed 's/ .*//' | tr -d '\n' | tr -d '\r'`
-$PYTHON $TITANIUM_BUILD/common/s3_cleaner.py desktop $GIT_BRANCH
-$PYTHON $TITANIUM_BUILD/common/s3_uploader.py desktop $TIMESTAMP_NAME $GIT_BRANCH $GIT_REVISION $BUILD_URL
+python $TITANIUM_BUILD/common/s3_cleaner.py desktop $GIT_BRANCH
+python $TITANIUM_BUILD/common/s3_uploader.py desktop $TIMESTAMP_NAME $GIT_BRANCH $GIT_REVISION $BUILD_URL
