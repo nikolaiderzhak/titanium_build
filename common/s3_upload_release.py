@@ -29,7 +29,7 @@ def upload_release(version, mobilesdk_zips):
 	release_index = []
 
 	for mobilesdk_zip in mobilesdk_zips:
-		upload_mobilesdk(mobilesdk_zip)
+		upload_mobilesdk(version, mobilesdk_zip)
 
 		sdk_name = os.path.basename(mobilesdk_zip)
 		matches = re.match(r"mobilesdk-([^-]+)-([^\.]+).zip", sdk_name)
@@ -46,7 +46,7 @@ def upload_release(version, mobilesdk_zips):
 		sdk_data["filesize"] = filesize
 		release_index.append(sdk_data)
 
-def upload_mobilesdk(mobilesdk_zip):
+def upload_mobilesdk(version, mobilesdk_zip):
 	filename = os.path.basename(mobilesdk_zip)
 
 	print 'uploading %s (version %s)...' % (filename, version)
