@@ -110,3 +110,6 @@ def main():
 	global bucket
 	bucket = cfg.open_bucket()
 	upload_release(version, mobilesdk_zips)
+
+if __name__ == "__main__":
+	main()
