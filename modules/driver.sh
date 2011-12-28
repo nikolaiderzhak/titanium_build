@@ -2,7 +2,7 @@
 
 # A hudson build driver for Titanium Mobile Modules
 
-export PATH=/usr/local/git/bin:$PATH
+export PATH=/Users/nikolai/bin:/usr/local/git/bin:$PATH
 
 export TITANIUM_BUILD=/Users/nikolai/build/titanium_build
 export WORKSPACE=/Users/nikolai/build/workspace/titanium_mobile_modules
@@ -42,8 +42,11 @@ done
 # Android modules
 
 export ANDROID_SDK=/Users/vasyl/android-sdk-mac_x86
+export ANDROID_NDK=/Users/nikolai/android-ndk-r7
 
 for MODULE in `ls $WORKSPACE/android`; do
+#	skip build.xml
+	if [ "$MODULE" = "build.xml" ]; then continue; fi
 #	for debugging of particular module
 #	if [ "$MODULE" != "urbanAirship" ]; then continue; fi
 
