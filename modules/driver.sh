@@ -5,7 +5,8 @@
 export PATH=/Users/nikolai/bin:/usr/local/git/bin:$PATH
 
 export TITANIUM_BUILD=/Users/nikolai/build/titanium_build
-export WORKSPACE=/Users/nikolai/build/workspace/titanium_mobile_modules
+#for debug only
+#export WORKSPACE=/Users/nikolai/build/workspace/titanium_mobile_modules
 
 cd $WORKSPACE
 
@@ -42,7 +43,7 @@ done
 # Android modules
 
 export ANDROID_SDK=/Users/vasyl/android-sdk-mac_x86
-export ANDROID_NDK=/Users/nikolai/android-ndk-r7
+export ANDROID_NDK=/Users/nikolai/android-ndk-r8
 
 for MODULE in `ls $WORKSPACE/android`; do
 #	skip build.xml
