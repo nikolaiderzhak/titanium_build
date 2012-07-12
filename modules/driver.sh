@@ -5,7 +5,7 @@
 export PATH=/usr/local/git/bin:$PATH
 
 export TITANIUM_BUILD=/Users/nikolai/build/titanium_build
-export WORKSPACE=/Users/nikolai/build/workspace/titanium_mobile_modules
+#export WORKSPACE=/Users/nikolai/build/workspace/titanium_mobile_modules
 
 cd $WORKSPACE
 

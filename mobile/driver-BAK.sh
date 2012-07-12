@@ -22,7 +22,8 @@ export PATH=/bin:/usr/bin:$PATH
 # export TITANIUM_BUILD
 
 echo
-echo 'TITANIUM_BUILD: ' $TITANIUM_BUILD
+echo -----  titanium_build  ------------------------------------------------
+echo $TITANIUM_BUILD
 echo
 
 #############################################################################
@@ -49,8 +50,11 @@ BASENAME=dist/mobilesdk-$VTAG
 echo 'BASENAME: '$BASENAME
 
 echo
-echo 'PATH: ' $PATH
+echo -----  p-a-t-h  -------------------------------------------------------
 echo
+echo $PATH
+echo
+
 
 scons package_all=1 version_tag=$VTAG $TI_MOBILE_SCONS_ARGS
 # scons package_all=1 version_tag=$VTAG 
@@ -115,68 +119,69 @@ then
 	rm -r $SLAVE_PACKAGE
 fi
 	
-######### zip -rq $SLAVE_PACKAGE slave_version.txt build drillbit 
-# 
-# if [ -e "tmp_unbundle" ]
-# then
-#   echo "removing old tmp files."
-#   rm -r tmp_unbundle
-# fi
-#   	
-# mkdir tmp_unbundle
-# mkdir tmp_unbundle/dist
-# cd tmp_unbundle/dist
-# unzip -o ../../$SDK_ARCHIVE
-# 
-# cd mobilesdk/osx
-# echo
-# echo 'VTAG--->  renaming...'
-# echo $VTAG
-# echo
-# echo 'VERSION--->  to::::'
-# echo $VERSION
-# echo
-# mv $VTAG $VERSION
-# 
-# # echo
-# # echo 'PWD: '
-# # pwd
-# cd ../../..
-# 
-# # echo
-# # pwd
-# # ls -la
-# 
-# zip -urq ../$SLAVE_PACKAGE dist/mobilesdk
-# 
-# echo
-# echo 'Capture DIR Listing (ls -la):'
-# ls -la
-# 
-# cd ..
-# ls -la $SLAVE_PACKAGE > LAST_SLAVE_PACKAGE
-# 
-# cd tmp_unbundle
-# 
-# echo
-# echo 'TITANIUM_BUILD---->'
-# echo $TITANIUM_BUILD
-# echo
+# zip -rq slave_package.zip slave_version.txt build drillbit runtests.sh slave_script.sh
+zip -rq $SLAVE_PACKAGE slave_version.txt build drillbit 
+
+if [ -e "tmp_unbundle" ]
+then
+	echo "removing old tmp files."
+	rm -r tmp_unbundle
+fi
+	
+mkdir tmp_unbundle
+mkdir tmp_unbundle/dist
+cd tmp_unbundle/dist
+unzip -o ../../$SDK_ARCHIVE
+
+cd mobilesdk/osx
+echo
+echo 'VTAG--->  renaming...'
+echo $VTAG
+echo
+echo 'VERSION--->  to::::'
+echo $VERSION
+echo
+mv $VTAG $VERSION
 
 echo
+echo Take I
+pwd
+cd ../../..
+
+echo
+pwd
+ls -la
+
+zip -urq ../$SLAVE_PACKAGE dist/mobilesdk
+
+echo
+echo Take II
+ls -la
+
+echo
+echo Take III
+cd ..
+ls -la $SLAVE_PACKAGE > LAST_SLAVE_PACKAGE
+
+cd tmp_unbundle
+
+echo
+echo 'TITANIUM_BUILD---->'
+echo $TITANIUM_BUILD
+echo
+
 echo 'Listing Work-Space---->'
 echo
 pwd
 echo
-
 cd /var/lib/jenkins/jobs/titanium_mobile_$TARGET_EXT/workspace
 ls -latr dist | tail -20
 
-# TS=`date +"%m%d%y-%H%M%S"`
-# ARCHIVE_FNAME="slave_package-$TS.zip"
-# echo
-# echo 'ARCHIVE_FNAME: ' $ARCHIVE_FNAME
-# cp $SLAVE_PACKAGE $ARCHIVE_FNAME
+TS=`date +"%m%d%y-%H%M%S"`
+ARCHIVE_FNAME="slave_package-$TS.zip"
+echo
+echo 'ARCHIVE_FNAME: ' $ARCHIVE_FNAME
+cp $SLAVE_PACKAGE $ARCHIVE_FNAME
 
 echo
 echo Going to s3 Uploader
